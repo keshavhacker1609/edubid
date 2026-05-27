@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import {
   Search,
   TrendingDown,
@@ -50,6 +51,7 @@ export default function LenderDashboard() {
           const newBid = payload.new as {
             loan_request_id: string;
             interest_rate: number;
+            lender_name?: string;
           };
           // Update the matching loan request with the new lowest rate
           setRequests((prev) =>
@@ -57,6 +59,9 @@ export default function LenderDashboard() {
               if (r.id === newBid.loan_request_id && newBid.interest_rate < r.current_lowest_rate) {
                 setNewBidFlash(r.id);
                 setTimeout(() => setNewBidFlash(null), 3000);
+                toast(`⚡ New bid: ${newBid.interest_rate.toFixed(2)}% on ${r.student_name}'s request`, {
+                  description: newBid.lender_name ? `By ${newBid.lender_name}` : 'Real-time update',
+                });
                 return {
                   ...r,
                   current_lowest_rate: newBid.interest_rate,
@@ -69,7 +74,9 @@ export default function LenderDashboard() {
         }
       )
       .subscribe((status) => {
-        setIsRealtime(status === 'SUBSCRIBED');
+        const connected = status === 'SUBSCRIBED';
+        setIsRealtime(connected);
+        if (connected) toast.success('Real-time feed connected');
       });
 
     channelRef.current = channel;
@@ -102,6 +109,7 @@ export default function LenderDashboard() {
   }
 
   async function handleBidSubmit(requestId: string, newRate: number, processingFee: number, conditions: string) {
+    const target = requests.find((r) => r.id === requestId);
     // Optimistic UI update — instant
     setRequests((prev) =>
       prev.map((r) =>
@@ -109,6 +117,9 @@ export default function LenderDashboard() {
       )
     );
     setActiveBidRequest(null);
+    toast.success(`Bid placed at ${newRate.toFixed(2)}% on ${target?.student_name ?? 'request'}!`, {
+      description: 'Your offer is now live in the auction.',
+    });
 
     // Background Supabase sync — UI never rolls back on failure
     try {
@@ -121,7 +132,10 @@ export default function LenderDashboard() {
         special_conditions: conditions || null,
         status: 'active',
       });
-      if (error) console.warn('[EduBid] Supabase bid sync failed:', error.message);
+      if (error) {
+        console.warn('[EduBid] Supabase bid sync failed:', error.message);
+        toast.error('Bid saved locally but failed to sync — will retry automatically.');
+      }
     } catch (err) {
       console.warn('[EduBid] Network error during bid sync:', err);
     }

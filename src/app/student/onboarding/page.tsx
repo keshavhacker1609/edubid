@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import {
@@ -146,9 +147,15 @@ export default function StudentOnboardingPage() {
             }
           : null,
       });
-      if (error) console.warn('Supabase insert failed:', error.message);
+      if (error) {
+        console.warn('Supabase insert failed:', error.message);
+        toast.error('Could not save to database — continuing anyway.');
+      } else {
+        toast.success('Loan request submitted! Your auction is now live.');
+      }
     } catch (err) {
       console.warn('Network error during submission:', err);
+      toast.error('Network error — your profile was saved locally.');
     }
     setSubmitting(false);
     setSubmitted(true);
