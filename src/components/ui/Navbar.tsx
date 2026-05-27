@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { TrendingDown, Zap, LogOut, User, ChevronDown, GraduationCap, Building2, Shield } from 'lucide-react';
+import { TrendingDown, LogOut, User, ChevronDown, GraduationCap, Building2, Shield } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -35,15 +35,16 @@ export default function Navbar() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10 border border-blue-500/20 group-hover:bg-blue-500/20 transition-colors">
-              <TrendingDown className="h-4 w-4 text-blue-400" />
+            <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/15 border border-blue-400/30 group-hover:bg-blue-500/25 group-hover:border-blue-400/50 transition-all duration-300"
+              style={{ boxShadow: '0 0 16px rgba(96,165,250,0.25), inset 0 0 12px rgba(96,165,250,0.08)' }}>
+              <TrendingDown className="h-4 w-4 text-blue-400 drop-shadow-[0_0_6px_rgba(96,165,250,0.9)]" />
             </div>
-            <span className="text-lg font-bold tracking-tight text-white">
-              Edu<span className="text-blue-400">Bid</span>
-            </span>
-            <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-400 uppercase tracking-wider">
-              <Zap className="h-2.5 w-2.5" />
-              Live
+            <span className="text-xl font-black tracking-tight">
+              <span className="text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.3)]">Edu</span>
+              <span
+                className="bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent"
+                style={{ textShadow: 'none', filter: 'drop-shadow(0 0 8px rgba(96,165,250,0.8)) drop-shadow(0 0 20px rgba(96,165,250,0.4))' }}
+              >Bid</span>
             </span>
           </Link>
 
